@@ -1,7 +1,7 @@
 {
     "name": "restruct/silverstripe-form-obfuscator",
     "description": "Form obfuscator (anti-spam) for SilverStripe",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "homepage": "https://github.com/restruct/silverstripe-form-obfuscator",
     "keywords": [
         "silverstripe",
