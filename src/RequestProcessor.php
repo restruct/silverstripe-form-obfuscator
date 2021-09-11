@@ -50,7 +50,7 @@ namespace Restruct\FormObfuscator {
          */
         public function obfuscateForms($html)
         {
-            $reg = '@action=("|\')([a-z\/0-9.-:\/]*)("|\')@i';
+            $reg = '@action=(")([^"]*)(")@i';
             if ( preg_match_all($reg, $html, $matches) ) {
                 for ( $i = 0; $i < count($matches[ 0 ]); $i++ ) {
                     $html = str_replace(
