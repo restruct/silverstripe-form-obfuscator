@@ -1,5 +1,5 @@
-SilverStripe\Core\Injector\Injecto:
-  RequestProcessor:
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\RequestProcessor:
     properties:
       filters:
         - '%$Restruct\FormObfuscator\RequestProcessor'
