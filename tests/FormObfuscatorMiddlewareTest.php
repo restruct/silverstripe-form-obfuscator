@@ -159,6 +159,38 @@ class FormObfuscatorMiddlewareTest extends SapphireTest
     }
 
     /**
+     * Pins the ltrim() of the request URL: a request whose getURL() reports a leading slash (a
+     * subclass or a hand-built request; HTTPRequest::setUrl() itself strips it) must still match
+     * the excluded prefixes.
+     */
+    public function testExcludedPrefixMatchesAUrlWithALeadingSlash()
+    {
+        $request = new class ('GET', 'admin/pages') extends HTTPRequest {
+            public function getURL($includeGetVars = false)
+            {
+                return '/admin/pages';
+            }
+        };
+        $response = HTTPResponse::create('<form action="/x">');
+        $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+
+        $this->assertFalse(
+            FormObfuscatorMiddleware::create()->shouldObfuscate($request, $response),
+            '/admin/pages was treated as not excluded'
+        );
+        $this->assertSame(
+            '<form action="/x">',
+            FormObfuscatorMiddleware::create()->process(
+                $request,
+                function () use ($response) {
+                    return $response;
+                }
+            )->getBody(),
+            '/admin/pages was obfuscated'
+        );
+    }
+
+    /**
      * Regression, 2.x: the exclusion read $request->getVar('url'), which Silverstripe 4+ never
      * sets, so CMS and dev responses were obfuscated too.
      */
