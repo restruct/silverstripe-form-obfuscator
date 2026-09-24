@@ -1,5 +1,18 @@
+---
+Name: form-obfuscator
+After:
+  - requestprocessors
+---
+# Registered as a Director middleware. 2.x added itself to the RequestProcessor 'filters' list;
+# RequestProcessor and RequestFilter were removed from framework 5, HTTPMiddleware replaces them.
 SilverStripe\Core\Injector\Injector:
-  SilverStripe\Control\RequestProcessor:
+  SilverStripe\Control\Director:
     properties:
-      filters:
-        - '%$Restruct\FormObfuscator\RequestProcessor'
+      Middlewares:
+        FormObfuscatorMiddleware: '%$Restruct\FormObfuscator\FormObfuscatorMiddleware'
+# The 2.x registration, kept for reference (the target service no longer exists on framework 5+):
+#SilverStripe\Core\Injector\Injector:
+#  SilverStripe\Control\RequestProcessor:
+#    properties:
+#      filters:
+#        - '%$Restruct\FormObfuscator\RequestProcessor'

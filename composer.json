@@ -16,7 +16,40 @@
         }
     ],
     "require": {
-        "silverstripe/framework": "^4.0",
-        "silverstripe/vendor-plugin": "^1.0"
-    }
+        "php": "^8.1",
+        "silverstripe/framework": "^5 || ^6",
+        "silverstripe/vendor-plugin": "^2 || ^3"
+    },
+    "require-dev": {
+        "silverstripe/recipe-testing": "^3 || ^4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Restruct\\FormObfuscator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Restruct\\FormObfuscator\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "3.x-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/vendor-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/restruct"
+        }
+    ]
 }
