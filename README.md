@@ -60,7 +60,8 @@ The module registers `Restruct\FormObfuscator\FormObfuscatorMiddleware` as a glo
 (`_config/extension.yml`). After the rest of the stack has produced a response, the middleware
 rewrites every `action="..."` attribute in the body when:
 
-* the response `Content-Type` is `text/html`, and
+* the response `Content-Type` is `text/html`,
+* the response is not streamed (`HTTPStreamResponse`, e.g. an HTML file served from assets), and
 * the request URL does not start with one of the `excluded_url_prefixes` (below).
 
 So it applies to every HTML response the site produces - pages, the login form, any controller -

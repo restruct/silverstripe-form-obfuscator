@@ -27,6 +27,10 @@ Requires PHP `^8.1` and `silverstripe/framework ^5 || ^6`.
   `&amp;` and the form posted to the wrong URL. The value is now decoded before it is encoded.
 - **Non-ASCII characters in an action were corrupted.** 2.x encoded bytes, not characters, so
   `é` came out as `Ã©`. Characters are now encoded whole (invalid UTF-8 falls back to bytes).
+- **Streamed HTML responses were rewritten and truncated.** A `text/html` `HTTPStreamResponse`
+  (for example an HTML file served from assets) was read whole into memory and its rewritten, longer
+  body was sent with the Content-Length of the original stream. Streamed responses are now passed
+  through untouched.
 
 ### Added
 

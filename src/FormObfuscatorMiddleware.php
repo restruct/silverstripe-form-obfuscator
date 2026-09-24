@@ -4,6 +4,7 @@ namespace Restruct\FormObfuscator;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\HTTPStreamResponse;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
@@ -61,7 +62,7 @@ class FormObfuscatorMiddleware implements HTTPMiddleware
     }
 
     /**
-     * Only HTML responses, and only outside the excluded URL prefixes.
+     * Only HTML responses that are not streamed, and only outside the excluded URL prefixes.
      *
      * 2.x read the path from `$request->getVar('url')`, an SS3-era rewrite parameter that
      * Silverstripe 4+ no longer sets, so its admin/dev exclusion never matched. The path now
@@ -69,6 +70,14 @@ class FormObfuscatorMiddleware implements HTTPMiddleware
      */
     public function shouldObfuscate(HTTPRequest $request, HTTPResponse $response): bool
     {
+        # A streamed response (e.g. a text/html file served from assets) is left alone: getBody()
+        # would read the whole stream into memory, and setBody() would keep the Content-Length the
+        # stream was created with, so a rewritten (longer) body is truncated by the client. Core's
+        # ChangeDetectionMiddleware::generateETag() skips streams for the same reason.
+        if ($response instanceof HTTPStreamResponse) {
+            return false;
+        }
+
         # getHeader() returns null when the header is absent; cast so preg_match gets a string
         if (!preg_match('/text\/html/i', (string) $response->getHeader('Content-Type'))) {
             return false;

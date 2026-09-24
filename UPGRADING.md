@@ -40,3 +40,5 @@ config no longer does anything; see README "Configuration" for how to switch the
   `excluded_url_prefixes` (README "Configuration").
 - Actions containing `&amp;` or non-ASCII characters now decode to the correct URL; in 2.x they
   decoded to a wrong one.
+- Streamed HTML responses (`HTTPStreamResponse`, e.g. an HTML file served from assets) are no
+  longer rewritten; 2.x rewrote them and the client truncated the body to the original length.

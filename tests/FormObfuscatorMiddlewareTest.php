@@ -6,6 +6,7 @@ use Restruct\FormObfuscator\FormObfuscatorMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\HTTPStreamResponse;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
@@ -156,6 +157,35 @@ class FormObfuscatorMiddlewareTest extends SapphireTest
             }
         );
         $this->assertSame('<form action="/x">', $out->getBody());
+    }
+
+    /**
+     * A streamed response (HTTPStreamResponse, e.g. a text/html file served from assets) must
+     * pass through untouched: reading it would buffer the whole stream, and rewriting it would
+     * leave the Content-Length the stream was created with, so the client truncates the body.
+     */
+    public function testStreamResponseIsPassedThroughUntouched()
+    {
+        $body = '<form action="/x">';
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $body);
+        rewind($stream);
+
+        $response = new HTTPStreamResponse($stream, strlen($body));
+        $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+
+        $out = FormObfuscatorMiddleware::create()->process(
+            new HTTPRequest('GET', 'assets/page.html'),
+            function () use ($response) {
+                return $response;
+            }
+        );
+
+        $this->assertSame($response, $out);
+        # No body was saved on the response: the stream was neither read into a string nor replaced
+        $this->assertNull($out->getSavedBody(), 'stream response body was read or replaced');
+        $this->assertSame((string) strlen($body), (string) $out->getHeader('Content-Length'));
+        $this->assertSame($body, $out->getBody());
     }
 
     /**
