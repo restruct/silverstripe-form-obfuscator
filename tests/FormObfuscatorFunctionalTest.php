@@ -14,7 +14,14 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class FormObfuscatorFunctionalTest extends FunctionalTest
 {
-    protected $usesDatabase = false;
+    # A temp database is required even though this test writes nothing: FunctionalTest::setUp()
+    # always calls logOut(), and when silverstripe/session-manager is installed (recipe-cms pulls
+    # it in) that queries the LoginSession table. With $usesDatabase = false the query runs against
+    # the host's REAL database, so it only passed on hosts where dev/build had already been run -
+    # a fresh host (CI, or a consumer running tests before a build) failed with "Table
+    # 'LoginSession' doesn't exist".
+    // protected $usesDatabase = false;
+    protected $usesDatabase = true;
 
     protected static $extra_controllers = [
         ObfuscatorTestController::class,
