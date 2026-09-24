@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0
+## 3.0.0 (2026-09-25)
 
 **Silverstripe 5 and 6.** One line, `main`, supports both. Silverstripe 4 stays on the `2.0.x` tags;
 nothing here is backported. Upgrade guide: [UPGRADING.md](UPGRADING.md).
