@@ -34,11 +34,16 @@ Requires PHP `^8.1` and `silverstripe/framework ^5 || ^6`.
 
 ### Added
 
-- Test suite (19 tests, identical on Silverstripe 5 and 6) with a regression test for each fix
+- Test suite (21 tests, identical on Silverstripe 5 and 6) with a regression test for each fix
   above, and a GitHub Actions matrix: Silverstripe 5 on PHP 8.1 and 8.3, Silverstripe 6 on PHP 8.3
   and 8.4.
 - README: how it works, configuration, public API, limitations, running the tests, and a version
   compatibility table.
+
+### Notes
+
+- Consumers counted locally only: the one known consumer project is on Silverstripe 4 with `^2.0`
+  and is not affected by this release. No hosting-wide inventory was made.
 
 ## 2.0.3
 
