@@ -167,14 +167,25 @@ jobs:
         #   failOnWarning.
         # - SS6 (framework 6, PHPUnit 11): a `flush=1` argument no longer works; framework 6 reads
         #   SS_PHPUNIT_FLUSH instead, which also combines with --testsuite.
+        #
+        # A green run is not enough on its own: a suite that silently loads fewer tests (a class
+        # not found, a directory not matched) also exits 0. So the module suite's summary line is
+        # checked for the exact test count, identical on both majors, and the SS6 legs add
+        # --fail-on-empty-test-suite (PHPUnit 11 exits 0 on an empty suite otherwise). Bump
+        # EXPECTED_TESTS whenever a test is added or removed.
+        env:
+          EXPECTED_TESTS: '21'
         run: |
+          set -o pipefail
           if [ "${{ matrix.silverstripe }}" = "5" ]; then
-            vendor/bin/phpunit vendor/restruct/silverstripe-form-obfuscator/tests flush=1
+            vendor/bin/phpunit vendor/restruct/silverstripe-form-obfuscator/tests flush=1 | tee module-tests.log
             vendor/bin/phpunit app/tests flush=1
           else
-            SS_PHPUNIT_FLUSH=1 vendor/bin/phpunit --testsuite formobfuscator
-            SS_PHPUNIT_FLUSH=1 vendor/bin/phpunit --testsuite consumer
+            SS_PHPUNIT_FLUSH=1 vendor/bin/phpunit --testsuite formobfuscator --fail-on-empty-test-suite | tee module-tests.log
+            SS_PHPUNIT_FLUSH=1 vendor/bin/phpunit --testsuite consumer --fail-on-empty-test-suite
           fi
+          grep -q "^OK (${EXPECTED_TESTS} tests" module-tests.log \
+            || { echo "Expected OK (${EXPECTED_TESTS} tests, ...) in the module suite output"; exit 1; }
 
       - name: Boot the app and build the database
         # The suite proves the class behaves; this proves the module does not break a real boot
