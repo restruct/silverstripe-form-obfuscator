@@ -119,8 +119,10 @@ SilverStripe\Core\Injector\Injector:
 
 ## Public API
 
-* `FormObfuscatorMiddleware::obfuscateForms(string $html): string` - encodes every double-quoted
-  `action="..."` attribute in `$html`. Usable on its own, e.g. for HTML you send outside a response.
+* `FormObfuscatorMiddleware::obfuscateForms($html)` - takes a string of HTML and returns it (as a
+  string) with every double-quoted `action="..."` attribute encoded. Usable on its own, e.g. for
+  HTML you send outside a response. The parameter and return are deliberately not type-declared
+  (as in 2.x), so a subclass can override the method without matching a typed signature.
 * `FormObfuscatorMiddleware::shouldObfuscate(HTTPRequest, HTTPResponse): bool` - the decision the
   middleware makes per response; override it in a subclass (registered via Injector) to change it.
 
@@ -132,6 +134,11 @@ SilverStripe\Core\Injector\Injector:
   response that looks like `action="..."` is encoded - including inside a `<script>` block, where
   the browser does NOT decode character references. Keep form markup that JavaScript injects out of
   inline script strings, or build it with `setAttribute()`.
+* That includes property assignments in inline scripts: `element.action="/path"` written without
+  spaces around `=` (typical of minified code) inside a `<script>` block is rewritten too, and the
+  script then assigns the literal encoded string, which breaks the form. Set the URL with
+  `setAttribute('action', url)` where `url` is built from non-literal strings, or add the page's
+  URL to `excluded_url_prefixes`.
 * It is not a security measure. It deters bots that do not decode HTML; anything running a real
   browser engine sees the plain URL.
 
