@@ -123,6 +123,7 @@ jobs:
               <testsuites>
                   <testsuite name="formobfuscator">
                       <directory>vendor/restruct/silverstripe-form-obfuscator/tests</directory>
+                      <exclude>vendor/restruct/silverstripe-form-obfuscator/tests/browser</exclude>
                   </testsuite>
                   <testsuite name="consumer">
                       <directory>app/tests</directory>
